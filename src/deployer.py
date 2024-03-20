@@ -68,8 +68,8 @@ class SesamNode:
             if len(subscriptions) > 0:
                 self.subscription_id = subscriptions[0]
 
-        safe_jwt = "{}*********{}".format(jwt_token[:10], jwt_token[-10:])
-        self.logger.info(f"Connecting to Sesam using url {node_url}' and JWT {safe_jwt}")
+        safe_jwt = f"{jwt_token[:10]} `*********` {jwt_token[-10:]}"
+        self.logger.info(f"Connecting to Sesam using url {node_url} and JWT {safe_jwt}")
         self.logger.info(f"JWT Principals {principals}")
 
         self.api_connection = sesamclient.Connection(
