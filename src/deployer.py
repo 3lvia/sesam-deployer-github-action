@@ -29,29 +29,20 @@ logger = logging.getLogger("sesam")
 
 class SummaryHandler(logging.Handler):
     def __init__(self):
-        super().__init__()
-
-        # Create a formatter
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-        # Create a stream handler and set the formatter
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(formatter)
-
-        # Add the stream handler to the logger
-        logger.addHandler(stream_handler)
-
-        # Set the formatter of the summary handler
-        self.setFormatter(formatter)
+        logging.Handler.__init__(self)
 
     def emit(self, record):
         try:
             msg = self.format(record)
+            # Get the log level name
+            log_level = logging.getLevelName(record.levelno)
+            # Get the timestamp with timezone
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
-            # Write formatted log message to $GITHUB_STEP_SUMMARY file if available
+            # Write formatted log message with timestamp and log level to $GITHUB_STEP_SUMMARY file if available
             if "GITHUB_STEP_SUMMARY" in os.environ:
                 with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary_file:
-                    summary_file.write(f"{msg}\n")
+                    summary_file.write(f"{timestamp} {log_level}: {msg}\n")
         except Exception as e:
             self.handleError(record)
 
