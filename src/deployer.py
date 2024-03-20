@@ -31,10 +31,18 @@ class SummaryHandler(logging.Handler):
     def __init__(self):
         super().__init__()
 
-        # Get the formatter from the logger named "sesam"
-        logger = logging.getLogger("sesam")
-        if logger.hasHandlers():
-            self.setFormatter(logger.handlers[0].formatter)
+        # Create a formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+        # Create a stream handler and set the formatter
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+
+        # Add the stream handler to the logger
+        logger.addHandler(stream_handler)
+
+        # Set the formatter of the summary handler
+        self.setFormatter(formatter)
 
     def emit(self, record):
         try:
@@ -248,9 +256,6 @@ def main():
         use_whitelist = parse_bool_env(os.environ.get(INPUT_USE_WHITELIST, "False"))
         dry_run = parse_bool_env(os.environ.get(INPUT_DRY_RUN, "True"))
         write_summary = parse_bool_env(os.environ.get(INPUT_WRITE_SUMMARY, "False"))
-
-        # Enforce write_summary to be False if GITHUB_STEP_SUMMARY is not available
-        write_summary = "GITHUB_STEP_SUMMARY" in os.environ
 
         # Add the custom handler if write_summary is enabled
         if write_summary:
