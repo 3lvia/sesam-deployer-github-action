@@ -175,7 +175,14 @@ def read_json_file(file_path):
         raise FileNotFoundError(f"File '{file_path}' not found.")
     except json.JSONDecodeError as e:
         raise ValueError(f"Error decoding JSON in file '{file_path}': {str(e)}")
-    
+
+
+def obfuscate_secrets(secrets_json):
+    obfuscated_secrets = {}
+    for key in secrets_json:
+        obfuscated_secrets[key] = '`***`'  # Replace values with asterisks
+    return obfuscated_secrets
+
 
 def deploy_secrets(sesam_node, secrets_file, dry_run, replace_secrets):
     if secrets_file:
@@ -185,7 +192,9 @@ def deploy_secrets(sesam_node, secrets_file, dry_run, replace_secrets):
         secrets_json = read_json_file(secrets_file)
 
         if dry_run:
-            logger.info("result: dry run enabled. No secrets deployed to the Sesam node.")
+            logger.info("result: dry run enabled. Showing secrets that would have been deployed (values obfuscated):")
+            obfuscated_secrets = obfuscate_secrets(secrets_json)
+            logger.info(obfuscated_secrets)
             return
 
         if replace_secrets:
@@ -202,7 +211,8 @@ def deploy_variables(sesam_node, variables_file, dry_run):
         variables_json = read_json_file(variables_file)
 
         if dry_run:
-            logger.info("result: dry run enabled. No variables deployed to the Sesam node.")
+            logger.info("result: dry run enabled. Showing variables that would have been deployed:")
+            logger.info(variables_json)
             return
 
         deploy_variables = sesam_node.put_env(variables_json)
