@@ -1,4 +1,4 @@
 certifi==2024.2.2
 charset-normalizer==3.3.2
-idna==3.6
+idna==3.7
 sesamclient==1.2.4
